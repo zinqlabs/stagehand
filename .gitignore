@@ -1,0 +1,9 @@
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+screenshot.png
+.DS_STORE
+.cache/
+.env
