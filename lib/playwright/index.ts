@@ -3,7 +3,6 @@ import {
   type Page,
   type Browser,
   type BrowserContext,
-  test as base,
   chromium,
 } from "@playwright/test";
 import { expect } from "@playwright/test";
@@ -85,7 +84,6 @@ export class Stagehand {
 
     const shot = await this.page.screenshot({
       fullPage: true,
-      path: "./screenshot.png",
     });
 
     const response = await this.openai.chat.completions.create({
