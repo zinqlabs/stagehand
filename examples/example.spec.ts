@@ -1,7 +1,7 @@
-import { stagehand } from "../lib/playwright";
+import { stagehandFixture } from "../lib/playwright/fixture";
 import { expect } from "@playwright/test";
 
-stagehand.only("has title", async ({ stagePage }) => {
+stagehandFixture.only("has title", async ({ stagePage }) => {
   await stagePage.page.goto("https://browserbase.com");
 
   const observation = await stagePage.observe("find a way to get early access");
@@ -19,7 +19,7 @@ stagehand.only("has title", async ({ stagePage }) => {
   });
 });
 
-stagehand(
+stagehandFixture(
   "book the next available timeslot",
   async ({ page, stagePage: { observe, act } }) => {
     await page.goto("https://calendly.com/zerostep-test/test-calendly");
@@ -56,7 +56,7 @@ stagehand(
   }
 );
 
-stagehand(
+stagehandFixture(
   "view article history and verify earliest revision",
   async ({ page, stagePage: { observe, act } }) => {
     await page.goto("https://en.wikipedia.org/wiki/Software_testing");
