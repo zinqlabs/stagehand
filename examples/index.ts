@@ -1,9 +1,13 @@
 import { Stagehand } from "../lib/playwright";
-import { chromium } from "playwright-core";
 
 async function example() {
-  const stageHand = new Stagehand(chromium);
-  console.log("Hello, world!");
+  const stageHand = new Stagehand({ env: "LOCAL" });
+  await stageHand.init();
+  await stageHand.page.goto("https://browserbase.com");
+  await stageHand.page.close();
+  await stageHand.browser.close();
 }
 
-(async () => {})();
+(async () => {
+  await example();
+})();

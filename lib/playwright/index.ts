@@ -18,26 +18,53 @@ import {
 
 require("dotenv").config({ path: ".env" });
 
+async function getBrowser(env: "LOCAL" | "BROWSERBASE" = "BROWSERBASE") {
+  if (process.env.BROWSERBASE_API_KEY && env !== "LOCAL") {
+    console.log("Connecting you to broswerbase...");
+    const browser = await chromium.connectOverCDP(
+      `wss://api.browserbase.com?apiKey=${process.env.BROWSERBASE_API_KEY}`
+    );
+    const context = browser.contexts()[0];
+    return { browser, context };
+  } else {
+    if (!process.env.BROWSERBASE_API_KEY) {
+      console.log("No browserbase key detected");
+      console.log("Starting a local browser...");
+    }
+    const browser = await chromium.launch({ headless: false });
+    const context = await browser.newContext({
+      viewport: { width: 1280, height: 720 },
+    });
+    const page = await context.newPage();
+    console.log("Local browser started successfully.");
+    return { browser, context, page };
+  }
+}
+
 export class Stagehand {
   private openai: OpenAI;
   private observations: { [key: string]: { result: string; testKey: string } };
   private actions: { [key: string]: { result: string; testKey: string } };
   testKey: string;
+  public browser: Browser;
+  public page: Page;
+  public context: BrowserContext;
+  public env: "LOCAL" | "BROWSERBASE";
 
   constructor(
-    public page: Page,
-    public browser: Browser,
-    public context: BrowserContext
+    { env }: { env: "LOCAL" | "BROWSERBASE" } = { env: "BROWSERBASE" }
   ) {
     this.openai = new OpenAI();
-
-    if (browser && context) {
-      const defaultContext = context;
-      this.setPage(defaultContext.pages()[0]);
-    }
-
+    this.env = env;
     this.observations = readObservations();
     this.actions = readActions();
+  }
+
+  async init() {
+    const { browser, context } = await getBrowser(this.env);
+    this.browser = browser;
+    this.context = context;
+    this.page = this.context.pages()[0];
   }
 
   async observe(observation: string): Promise<string> {
@@ -270,7 +297,3 @@ export class Stagehand {
     this.context = context;
   }
 }
-
-type Fixture = {
-  stagePage: Stagehand;
-};
