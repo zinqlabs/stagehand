@@ -1,4 +1,4 @@
-import { stagehand } from "../lib/";
+import { stagehand } from "../lib/playwright";
 import { expect } from "@playwright/test";
 
 stagehand.only("has title", async ({ stagePage }) => {
