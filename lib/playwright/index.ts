@@ -65,6 +65,11 @@ export class Stagehand {
     this.browser = browser;
     this.context = context;
     this.page = this.context.pages()[0];
+    const currentPath = require("path").resolve(__dirname, "./preload.js");
+    await this.page.addInitScript({ path: currentPath });
+    await this.page.on("domcontentloaded", async () => {
+      return this.page.evaluate(() => window.waitForDomSettle());
+    });
   }
 
   async observe(observation: string): Promise<string> {
@@ -80,6 +85,7 @@ export class Stagehand {
 
     const shot = await this.page.screenshot({
       fullPage: true,
+      path: "./screenshot.png",
     });
 
     const response = await this.openai.chat.completions.create({
