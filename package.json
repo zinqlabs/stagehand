@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "example": "tsx examples/index.ts"
+    "example": "tsx examples/index.ts",
+    "cache:clear": "rm -rf .cache"
   },
   "keywords": [],
   "author": "",

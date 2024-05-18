@@ -3,12 +3,7 @@ const observationsPath = "./.cache/observations.json";
 const actionsPath = "./.cache/actions.json";
 
 export function readObservations() {
-  try {
-    return JSON.parse(fs.readFileSync(observationsPath, "utf8"));
-  } catch (error) {
-    console.error("Error reading from observations.json", error);
-    return {};
-  }
+  return JSON.parse(fs.readFileSync(observationsPath, "utf8"));
 }
 
 export function writeObservations(cache: object) {
@@ -54,4 +49,19 @@ export function evictCache(key: string) {
 
   writeObservations(filteredObservationsCache);
   writeActions(filteredActionsCache);
+}
+
+export function initCache() {
+  const cacheDir = ".cache";
+
+  if (!fs.existsSync(cacheDir)) {
+    fs.mkdirSync(cacheDir);
+  }
+  if (!fs.existsSync(actionsPath)) {
+    fs.writeFileSync(actionsPath, JSON.stringify({}));
+  }
+
+  if (!fs.existsSync(observationsPath)) {
+    fs.writeFileSync(observationsPath, JSON.stringify({}));
+  }
 }

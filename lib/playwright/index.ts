@@ -13,6 +13,7 @@ import {
   writeActions,
   getCacheKey,
   evictCache,
+  initCache,
 } from "../cache";
 
 require("dotenv").config({ path: ".env" });
@@ -55,6 +56,8 @@ export class Stagehand {
   ) {
     this.openai = new OpenAI();
     this.env = env;
+    initCache();
+
     this.observations = readObservations();
     this.actions = readActions();
   }
@@ -64,6 +67,7 @@ export class Stagehand {
     this.browser = browser;
     this.context = context;
     this.page = this.context.pages()[0];
+
     const currentPath = require("path").resolve(__dirname, "./preload.js");
     await this.page.addInitScript({ path: currentPath });
     await this.page.on("domcontentloaded", async () => {
@@ -135,7 +139,7 @@ export class Stagehand {
 
     for (const body of bodies) {
       const selectorResponse = await this.openai.chat.completions.create({
-        model: "gpt-4-turbo-preview",
+        model: "gpt-4o",
         messages: [
           {
             role: "system",
