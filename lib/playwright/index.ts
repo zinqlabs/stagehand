@@ -71,6 +71,10 @@ export class Stagehand {
     });
   }
 
+  async cleanDOM() {
+    // implement me
+  }
+
   async observe(observation: string): Promise<string> {
     const key = getCacheKey(observation);
     if (this.observations[key]) {
@@ -243,6 +247,8 @@ export class Stagehand {
 
       return;
     }
+
+    const cleanDOM = await this.cleanDOM();
     const area = observation
       ? await this.page
           .locator(this.observations[observation].result)
