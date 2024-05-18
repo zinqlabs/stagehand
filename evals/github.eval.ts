@@ -2,7 +2,7 @@ import { Eval } from "braintrust";
 import { LevenshteinScorer } from "autoevals";
 import { Stagehand } from "../lib/playwright";
 
-Eval("Calendly", {
+Eval("Github", {
   data: () => {
     return [
       {

@@ -7,7 +7,7 @@ Eval("Calendly", {
     return [
       {
         input: "find the calendar",
-        expected: `div[data-testid="calendar"]`,
+        expected: `div[data-testid="calendar"]`, // actually see if the underlying DOM element is good
       },
     ];
   },
