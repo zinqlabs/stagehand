@@ -338,8 +338,8 @@ async function applyStealthScripts(context: BrowserContext) {
     window.navigator.permissions.query = (parameters) =>
       parameters.name === "notifications"
         ? Promise.resolve({
-            state: Notification.permission,
-          } as PermissionStatus)
+          state: Notification.permission,
+        } as PermissionStatus)
         : originalQuery(parameters);
   });
 }
@@ -400,8 +400,8 @@ export class Stagehand {
       selfHeal = true,
       waitForCaptchaSolves = false,
     }: ConstructorParams = {
-      env: "BROWSERBASE",
-    },
+        env: "BROWSERBASE",
+      },
   ) {
     this.externalLogger = logger || defaultLogger;
     this.enableCaching =
@@ -484,14 +484,15 @@ export class Stagehand {
   }
 
   async init(
+    context?: BrowserContext
     /** @deprecated Use constructor options instead */
     initOptions?: InitOptions,
   ): Promise<InitResult> {
     if (isRunningInBun()) {
       throw new Error(
         "Playwright does not currently support the Bun runtime environment. " +
-          "Please use Node.js instead. For more information, see: " +
-          "https://github.com/microsoft/playwright/issues/27139",
+        "Please use Node.js instead. For more information, see: " +
+        "https://github.com/microsoft/playwright/issues/27139",
       );
     }
 
@@ -524,26 +525,35 @@ export class Stagehand {
     }
 
     const { context, debugUrl, sessionUrl, contextPath, sessionId, env } =
-      await getBrowser(
-        this.apiKey,
-        this.projectId,
-        this.env,
-        this.headless,
-        this.logger,
-        this.browserbaseSessionCreateParams,
-        this.browserbaseSessionID,
-        this.localBrowserLaunchOptions,
-      ).catch((e) => {
-        console.error("Error in init:", e);
-        const br: BrowserResult = {
-          context: undefined,
+      context
+        ? {
+          context,
           debugUrl: undefined,
           sessionUrl: undefined,
+          contextPath: undefined,
           sessionId: undefined,
           env: this.env,
-        };
-        return br;
-      });
+        } :
+        await getBrowser(
+          this.apiKey,
+          this.projectId,
+          this.env,
+          this.headless,
+          this.logger,
+          this.browserbaseSessionCreateParams,
+          this.browserbaseSessionID,
+          this.localBrowserLaunchOptions,
+        ).catch((e) => {
+          console.error("Error in init:", e);
+          const br: BrowserResult = {
+            context: undefined,
+            debugUrl: undefined,
+            sessionUrl: undefined,
+            sessionId: undefined,
+            env: this.env,
+          };
+          return br;
+        });
     this.intEnv = env;
     this.contextPath = contextPath;
     this.stagehandContext = await StagehandContext.init(context, this);
