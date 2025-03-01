@@ -484,7 +484,7 @@ export class Stagehand {
   }
 
   async init(
-    context?: BrowserContext
+    ctx?: BrowserContext,
     /** @deprecated Use constructor options instead */
     initOptions?: InitOptions,
   ): Promise<InitResult> {
@@ -524,36 +524,35 @@ export class Stagehand {
       this.browserbaseSessionID = sessionId;
     }
 
-    const { context, debugUrl, sessionUrl, contextPath, sessionId, env } =
-      context
-        ? {
-          context,
+    const { context, debugUrl, sessionUrl, contextPath, sessionId, env } = ctx
+      ? {
+        context: ctx,
+        debugUrl: undefined,
+        sessionUrl: undefined,
+        contextPath: undefined,
+        sessionId: undefined,
+        env: this.env,
+      }
+      : await getBrowser(
+        this.apiKey,
+        this.projectId,
+        this.env,
+        this.headless,
+        this.logger,
+        this.browserbaseSessionCreateParams,
+        this.browserbaseSessionID,
+        this.localBrowserLaunchOptions,
+      ).catch((e) => {
+        console.error("Error in init:", e);
+        const br: BrowserResult = {
+          context: undefined,
           debugUrl: undefined,
           sessionUrl: undefined,
-          contextPath: undefined,
           sessionId: undefined,
           env: this.env,
-        } :
-        await getBrowser(
-          this.apiKey,
-          this.projectId,
-          this.env,
-          this.headless,
-          this.logger,
-          this.browserbaseSessionCreateParams,
-          this.browserbaseSessionID,
-          this.localBrowserLaunchOptions,
-        ).catch((e) => {
-          console.error("Error in init:", e);
-          const br: BrowserResult = {
-            context: undefined,
-            debugUrl: undefined,
-            sessionUrl: undefined,
-            sessionId: undefined,
-            env: this.env,
-          };
-          return br;
-        });
+        };
+        return br;
+      });
     this.intEnv = env;
     this.contextPath = contextPath;
     this.stagehandContext = await StagehandContext.init(context, this);
